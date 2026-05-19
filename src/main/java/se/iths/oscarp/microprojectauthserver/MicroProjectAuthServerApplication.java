@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MicroProjectAuthServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MicroProjectAuthServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MicroProjectAuthServerApplication.class, args);
+    }
 
 }
