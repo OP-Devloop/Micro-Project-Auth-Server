@@ -1,4 +1,9 @@
 package se.iths.oscarp.microprojectauthserver.dto;
 
-public class AppUserRequestDTO {
+import java.time.LocalDate;
+
+public record AppUserRequestDTO(
+        String username,
+        LocalDate dateOfBirth
+) {
 }
