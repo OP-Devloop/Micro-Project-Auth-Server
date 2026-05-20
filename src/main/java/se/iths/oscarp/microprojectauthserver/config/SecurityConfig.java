@@ -1,5 +1,6 @@
 package se.iths.oscarp.microprojectauthserver.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -57,5 +61,18 @@ public class SecurityConfig {
         });
 
         return converter;
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(@Value("${app.auth-server-url}") String authServerUrl) {
+
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                .withJwkSetUri(authServerUrl + "/auth/jwks")
+                .build();
+
+        jwtDecoder.setJwtValidator(
+                JwtValidators.createDefaultWithIssuer(authServerUrl));
+
+        return jwtDecoder;
     }
 }
