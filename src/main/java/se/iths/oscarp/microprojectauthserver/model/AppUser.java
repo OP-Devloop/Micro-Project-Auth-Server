@@ -18,6 +18,7 @@ public class AppUser {
     private Long id;
 
     private String username;
+    private String role;
     private LocalDate dateOfBirth;
     private String createdBy;
 }
