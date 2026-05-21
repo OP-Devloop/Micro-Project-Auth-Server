@@ -7,6 +7,7 @@ import se.iths.oscarp.microprojectauthserver.mapper.AppUserMapper;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
 import se.iths.oscarp.microprojectauthserver.repository.AppUserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +27,7 @@ public class AppUserService {
     public AppUser create(AppUserRequestDTO dto, String username) {
         AppUser appUser = appUserMapper.toEntity(dto);
         appUser.setCreatedBy(username);
+        appUser.setDateOfBirth(LocalDateTime.now().toLocalDate());
         return appUserRepository.save(appUser);
     }
 }
