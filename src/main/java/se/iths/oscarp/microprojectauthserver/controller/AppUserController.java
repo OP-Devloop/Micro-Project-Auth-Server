@@ -3,8 +3,6 @@ package se.iths.oscarp.microprojectauthserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.iths.oscarp.microprojectauthserver.dto.AppUserRequestDTO;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
@@ -29,10 +27,8 @@ public class AppUserController {
     }
 
     @PostMapping
-    public ResponseEntity<AppUser> create(@RequestBody AppUserRequestDTO dto,
-                                          @AuthenticationPrincipal Jwt jwt
-    ) {
-        AppUser appUser = appUserService.create(dto, jwt.getSubject());
+    public ResponseEntity<AppUser> create(@RequestBody AppUserRequestDTO dto) {
+        AppUser appUser = appUserService.create(dto, "system");
         return ResponseEntity.status(HttpStatus.CREATED).body(appUser);
     }
 }
