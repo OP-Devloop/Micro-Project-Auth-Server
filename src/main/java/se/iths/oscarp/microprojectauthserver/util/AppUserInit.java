@@ -5,8 +5,12 @@ import org.springframework.stereotype.Component;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
 import se.iths.oscarp.microprojectauthserver.repository.AppUserRepository;
 
+import java.time.LocalDateTime;
+
 @Component
 public class AppUserInit {
+
+    // TO BE DELETED BEFORE FINAL VERSION
 
     private AppUserRepository appUserRepository;
 
@@ -17,17 +21,32 @@ public class AppUserInit {
     @PostConstruct
     public void createAppUser() {
 
-        AppUser admin = new AppUser();
-        admin.setUsername("admin");
-        admin.setRole("ADMIN");
-        admin.setCreatedBy("system");
-        appUserRepository.save(admin);
+        if (appUserRepository.count() == 0) {
 
-        AppUser user = new AppUser();
-        user.setUsername("user");
-        user.setRole("USER");
-        user.setCreatedBy("system");
-        appUserRepository.save(user);
+            AppUser admin = new AppUser();
+            admin.setUsername("admin");
+            admin.setPassword("passwrod");
+            admin.setRole("ADMIN");
+            admin.setDateOfBirth(LocalDateTime.now().toLocalDate());
+            admin.setCreatedBy("system");
+
+            appUserRepository.save(admin);
+
+            System.out.println("Created System Admin");
+
+            AppUser user = new AppUser();
+            user.setUsername("user");
+            user.setPassword("password");
+            user.setRole("USER");
+            user.setDateOfBirth(LocalDateTime.now().toLocalDate());
+            user.setCreatedBy("system");
+
+            appUserRepository.save(user);
+
+            System.out.println("Created System User");
+        } else {
+            System.out.println("AppUsers already exist, skipping initialization.");
+        }
 
     }
 }
