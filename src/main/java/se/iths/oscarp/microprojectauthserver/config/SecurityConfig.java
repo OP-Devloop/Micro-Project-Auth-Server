@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
 
@@ -52,9 +51,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtAuthenticationConverter jwtAuthenticationConverter
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -62,15 +59,18 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/jwks",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/error"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/appusers/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/appusers").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/appusers/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
-
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
-                        jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                        .anyRequest().authenticated());
         return http.build();
     }
 
@@ -109,35 +109,4 @@ public class SecurityConfig {
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-//    @Bean
-//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-//        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-//
-//        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-//            List<String> roles = jwt.getClaimAsStringList("roles");
-//
-//            if (roles == null) {
-//                return List.of();
-//            }
-//            return roles.stream()
-//                    .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role))
-//                    .toList();
-//        });
-//
-//        return converter;
-//    }
-//
-//    @Bean
-//    public JwtDecoder jwtDecoder(@Value("${app.auth-server-url}") String authServerUrl) {
-//
-//        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
-//                .withJwkSetUri(authServerUrl + "/auth/jwks")
-//                .build();
-//
-//        jwtDecoder.setJwtValidator(
-//                JwtValidators.createDefaultWithIssuer(authServerUrl));
-//
-//        return jwtDecoder;
-//    }
 }
