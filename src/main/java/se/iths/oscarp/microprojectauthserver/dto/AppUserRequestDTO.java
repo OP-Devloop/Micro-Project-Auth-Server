@@ -1,9 +1,11 @@
 package se.iths.oscarp.microprojectauthserver.dto;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
 
 public record AppUserRequestDTO(
+        @NotBlank(message = "Username is required")
         String username,
-        LocalDate dateOfBirth
+        @NotBlank(message = "Password is required")
+        String password
 ) {
 }
