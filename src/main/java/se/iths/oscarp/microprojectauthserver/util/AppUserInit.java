@@ -13,8 +13,8 @@ public class AppUserInit {
 
     // TO BE DELETED BEFORE FINAL VERSION
 
-    private PasswordEncoder passwordEncoder;
-    private AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AppUserRepository appUserRepository;
 
     public AppUserInit(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
