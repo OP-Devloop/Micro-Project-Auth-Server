@@ -2,10 +2,10 @@ package se.iths.oscarp.microprojectauthserver.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record AppUserRequestDTO(
-        @NotBlank(message = "Username is required")
+public record LoginRequestDTO(
+        @NotBlank
         String username,
-        @NotBlank(message = "Password is required")
+        @NotBlank
         String password
 ) {
 }
