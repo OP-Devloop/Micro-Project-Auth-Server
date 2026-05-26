@@ -10,7 +10,7 @@
     </parent>
     <groupId>se.iths.oscarp</groupId>
     <artifactId>Micro-Project-Auth-Server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Micro-Project-Auth-Server</name>
     <description>Micro-Project-Auth-Server</description>
     <url/>
