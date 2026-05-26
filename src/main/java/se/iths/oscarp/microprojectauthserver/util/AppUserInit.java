@@ -1,6 +1,7 @@
 package se.iths.oscarp.microprojectauthserver.util;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
 import se.iths.oscarp.microprojectauthserver.repository.AppUserRepository;
@@ -12,9 +13,11 @@ public class AppUserInit {
 
     // TO BE DELETED BEFORE FINAL VERSION
 
-    private AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AppUserRepository appUserRepository;
 
-    public AppUserInit(AppUserRepository appUserRepository) {
+    public AppUserInit(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.appUserRepository = appUserRepository;
     }
 
@@ -25,7 +28,7 @@ public class AppUserInit {
 
             AppUser admin = new AppUser();
             admin.setUsername("admin");
-            admin.setPassword("passwrod");
+            admin.setPassword(passwordEncoder.encode("password"));
             admin.setRole("ADMIN");
             admin.setDateOfBirth(LocalDateTime.now().toLocalDate());
             admin.setCreatedBy("system");
@@ -36,7 +39,7 @@ public class AppUserInit {
 
             AppUser user = new AppUser();
             user.setUsername("user");
-            user.setPassword("password");
+            user.setPassword(passwordEncoder.encode("12345"));
             user.setRole("USER");
             user.setDateOfBirth(LocalDateTime.now().toLocalDate());
             user.setCreatedBy("system");
