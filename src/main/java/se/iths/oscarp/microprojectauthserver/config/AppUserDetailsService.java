@@ -9,7 +9,7 @@ import se.iths.oscarp.microprojectauthserver.repository.AppUserRepository;
 
 @Service
 public class AppUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
-    private AppUserRepository appUserRepository;
+    private final AppUserRepository appUserRepository;
 
     public AppUserDetailsService(AppUserRepository appUserRepository) {
         this.appUserRepository = appUserRepository;
