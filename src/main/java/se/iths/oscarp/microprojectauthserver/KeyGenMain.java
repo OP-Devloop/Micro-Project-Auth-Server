@@ -15,7 +15,9 @@ public class KeyGenMain {
                 .encodeToString(keyPair.getPublic().getEncoded());
         System.out.println("Private key att kopiera:");
         System.out.println(privateKey);
+        System.out.println("Put this key in a Environment Variable named JWT_PRIVATE_KEY");
         System.out.println("Public key att kopiera:");
         System.out.println(publicKey);
+        System.out.println("Put this key in a Environment Variable named JWT_PUBLIC_KEY");
     }
 }
