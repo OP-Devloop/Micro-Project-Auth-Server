@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
+// Handles authentication and JWT generation
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
@@ -32,6 +33,7 @@ public class AuthService {
     private final long jwtExpirationMinutes;
     private final String jwtKeyId;
 
+    // Injects authentication and JWT dependencies
     public AuthService(AuthenticationManager authenticationManager,
                        JwtEncoder jwtEncoder,
                        KeyPair keyPair,
@@ -46,6 +48,7 @@ public class AuthService {
         this.jwtKeyId = jwtKeyId;
     }
 
+    // Authenticates user and generates JWT token
     public TokenResponseDTO login(LoginRequestDTO request) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -89,6 +92,7 @@ public class AuthService {
         );
     }
 
+    // Returns public JWK set for token verification
     public Map<String, Object> publicJwkSet() {
         RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
                 .keyID(jwtKeyId)
