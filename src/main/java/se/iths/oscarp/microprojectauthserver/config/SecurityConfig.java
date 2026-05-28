@@ -30,6 +30,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+// Configures application security and JWT support
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final String jwtPrivateKey;
     private final String jwtKeyId;
 
+    // Injects JWT configuration properties
     public SecurityConfig(@Value("${app.jwt.issuer}") String jwtIssuer,
                           @Value("${app.jwt.public-key:}") String jwtPublicKey,
                           @Value("${app.jwt.private-key:}") String jwtPrivateKey,
@@ -50,6 +52,7 @@ public class SecurityConfig {
         this.jwtKeyId = jwtKeyId;
     }
 
+    // Configures HTTP security rules and public endpoints
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -70,6 +73,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Creates RSA key pair from configured JWT keys
     @Bean
     public KeyPair keyPair() throws Exception {
         if (StringUtils.hasText(jwtPrivateKey) && StringUtils.hasText(jwtPublicKey)) {
@@ -85,6 +89,7 @@ public class SecurityConfig {
         throw new IllegalArgumentException("Privat eller publik nyckel för JWT saknas");
     }
 
+    // Provides JWK source for JWT signing and verification
     @Bean
     public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
         RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
@@ -94,16 +99,19 @@ public class SecurityConfig {
         return new ImmutableJWKSet<>(new JWKSet(rsaKey));
     }
 
+    // Creates JWT encoder using RSA keys
     @Bean
     public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+    // Password encoder using BCrypt hashing
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Exposes Spring Security authentication manager
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration

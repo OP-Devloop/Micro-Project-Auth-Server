@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
 import se.iths.oscarp.microprojectauthserver.repository.AppUserRepository;
 
+// Loads user details from the database for authentication
 @Service
 public class AppUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
     private final AppUserRepository appUserRepository;
@@ -15,6 +16,7 @@ public class AppUserDetailsService implements org.springframework.security.core.
         this.appUserRepository = appUserRepository;
     }
 
+    // Finds user by username and maps to Spring Security UserDetails
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser appUser = appUserRepository.findByUsername(username)

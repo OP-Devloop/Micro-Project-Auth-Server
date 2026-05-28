@@ -9,6 +9,7 @@ import se.iths.oscarp.microprojectauthserver.service.AuthService;
 
 import java.util.Map;
 
+// Handles authentication-related endpoints
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -18,6 +19,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    // Authenticates user and returns JWT token
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDTO> login(
             @Valid @RequestBody LoginRequestDTO request
@@ -25,6 +27,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
+    // Exposes public JWK set for JWT verification
     @GetMapping("/jwks")
     public ResponseEntity<Map<String, Object>> publicJwks() {
         return ResponseEntity.ok(authService.publicJwkSet());
