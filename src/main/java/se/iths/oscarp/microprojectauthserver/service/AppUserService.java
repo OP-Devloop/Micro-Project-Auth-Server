@@ -34,6 +34,7 @@ public class AppUserService {
         );
 
         appUser.setRole("USER");
+        appUser.setCreatedBy("system");
 
         appUser.setDateOfBirth(LocalDateTime.now().toLocalDate());
         return appUserRepository.save(appUser);
