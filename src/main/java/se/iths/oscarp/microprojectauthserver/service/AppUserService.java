@@ -1,6 +1,7 @@
 package se.iths.oscarp.microprojectauthserver.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.iths.oscarp.microprojectauthserver.dto.AppUserRequestDTO;
 import se.iths.oscarp.microprojectauthserver.mapper.AppUserMapper;
@@ -15,6 +16,7 @@ import java.util.List;
 public class AppUserService {
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<AppUser> findAll() {
         return appUserRepository.findAll();
@@ -26,7 +28,13 @@ public class AppUserService {
 
     public AppUser create(AppUserRequestDTO dto, String username) {
         AppUser appUser = appUserMapper.toEntity(dto);
-        appUser.setCreatedBy(username);
+
+        appUser.setPassword(
+                passwordEncoder.encode(appUser.getPassword())
+        );
+
+        appUser.setRole("USER");
+
         appUser.setDateOfBirth(LocalDateTime.now().toLocalDate());
         return appUserRepository.save(appUser);
     }
