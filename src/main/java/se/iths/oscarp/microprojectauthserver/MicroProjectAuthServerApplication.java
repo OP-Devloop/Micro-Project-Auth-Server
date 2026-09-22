@@ -9,5 +9,4 @@ public class MicroProjectAuthServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(MicroProjectAuthServerApplication.class, args);
     }
-
 }
