@@ -15,8 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -71,10 +70,16 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/appusers",
-                                "/appusers/**",
                                 "/error"
                         ).permitAll()
-                        .anyRequest().authenticated());
+                        .requestMatchers("/appusers/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwt -> {
+                        })
+                );
+
         return http.build();
     }
 
@@ -110,6 +115,19 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+    @Bean
+    public JwtDecoder jwtDecoder(KeyPair keyPair) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(
+                (RSAPublicKey) keyPair.getPublic()
+        ).build();
+
+        decoder.setJwtValidator(
+                JwtValidators.createDefaultWithIssuer(jwtIssuer)
+        );
+
+        return decoder;
+    }
+
     // Password encoder using BCrypt hashing
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -128,7 +146,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:5173/" + "http://localhost:5174/" + "http://localhost:5175/");
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedOrigin("http://localhost:5175");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
