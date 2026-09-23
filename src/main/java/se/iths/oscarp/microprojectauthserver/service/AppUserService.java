@@ -26,6 +26,11 @@ public class AppUserService {
         return appUserRepository.findById(id).orElse(null);
     }
 
+    public AppUser findByUsername(String username) {
+        return appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     public AppUser create(AppUserRequestDTO dto, String username) {
         AppUser appUser = appUserMapper.toEntity(dto);
 

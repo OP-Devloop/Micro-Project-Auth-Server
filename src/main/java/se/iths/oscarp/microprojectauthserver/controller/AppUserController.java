@@ -3,6 +3,7 @@ package se.iths.oscarp.microprojectauthserver.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import se.iths.oscarp.microprojectauthserver.dto.AppUserRequestDTO;
 import se.iths.oscarp.microprojectauthserver.model.AppUser;
@@ -24,6 +25,13 @@ public class AppUserController {
     @GetMapping("/{id}")
     public ResponseEntity<AppUser> findById(@PathVariable Long id) {
         return ResponseEntity.ok(appUserService.findById(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<AppUser> getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+
+        return ResponseEntity.ok(appUserService.findByUsername(username));
     }
 
     @PostMapping
