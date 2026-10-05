@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import se.iths.oscarp.microprojectauthserver.security.CookieBearerTokenResolver;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -65,6 +67,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/auth/login",
+                                "/auth/logout",
                                 "/auth/jwks",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -76,8 +79,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt -> {
-                        })
+                        oauth2
+                                .bearerTokenResolver(new CookieBearerTokenResolver())
+                                .jwt(Customizer.withDefaults())
                 );
 
         return http.build();
@@ -149,8 +153,11 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:5174");
         config.addAllowedOrigin("http://localhost:5175");
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

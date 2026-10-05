@@ -6,7 +6,7 @@ import java.util.List;
 public record TokenResponseDTO(
 
         // Generated JWT access token
-        String accessToken,
+//        String accessToken,
 
         // Token expiration time in seconds
         long expiresIn,
