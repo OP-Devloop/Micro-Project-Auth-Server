@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import se.iths.oscarp.microprojectauthserver.dto.AuthResult;
 import se.iths.oscarp.microprojectauthserver.dto.LoginRequestDTO;
 import se.iths.oscarp.microprojectauthserver.dto.TokenResponseDTO;
 
@@ -49,7 +50,7 @@ public class AuthService {
     }
 
     // Authenticates user and generates JWT token
-    public TokenResponseDTO login(LoginRequestDTO request) {
+    public AuthResult login(LoginRequestDTO request) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -84,11 +85,13 @@ public class AuthService {
                 JwtEncoderParameters.from(jwsHeader, claimsBuilder.build())
         ).getTokenValue();
 
-        return new TokenResponseDTO(
+        return new AuthResult(
                 accessToken,
-                ChronoUnit.SECONDS.between(now, expiresAt),
-                principal.getUsername(),
-                roles
+                new TokenResponseDTO(
+                        jwtExpirationMinutes * 60L,
+                        principal.getUsername(),
+                        roles
+                )
         );
     }
 
