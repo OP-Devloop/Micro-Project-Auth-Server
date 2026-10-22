@@ -15,18 +15,23 @@ import java.util.List;
 @RequestMapping("/appusers")
 @RequiredArgsConstructor
 public class AppUserController {
+
+    // Provides business logic for managing application users.
     private final AppUserService appUserService;
 
+    // Retrieves all registered users.
     @GetMapping
     public ResponseEntity<List<AppUser>> findAll() {
         return ResponseEntity.ok(appUserService.findAll());
     }
 
+    // Retrieves a user by their ID.
     @GetMapping("/{id}")
     public ResponseEntity<AppUser> findById(@PathVariable Long id) {
         return ResponseEntity.ok(appUserService.findById(id));
     }
 
+    // Retrieves the currently authenticated user using their username.
     @GetMapping("/me")
     public ResponseEntity<AppUser> getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
@@ -34,6 +39,7 @@ public class AppUserController {
         return ResponseEntity.ok(appUserService.findByUsername(username));
     }
 
+    // Creates a new user and returns HTTP 201 Created.
     @PostMapping
     public ResponseEntity<AppUser> create(@RequestBody AppUserRequestDTO dto) {
         AppUser appUser = appUserService.create(dto, "system");
