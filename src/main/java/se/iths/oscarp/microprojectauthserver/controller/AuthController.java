@@ -20,6 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    // Injects the service responsible for authentication operations.
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -28,8 +29,10 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> login(
             @RequestBody LoginRequestDTO request
     ) {
+        // Authenticates the user and retrieves the token and response data.
         AuthResult result = authService.login(request);
 
+        // Builds the JSON response containing the access token and user details.
         Map<String, Object> body = Map.of(
                 "accessToken", result.accessToken(),
                 "expiresIn", result.response().expiresIn(),
@@ -40,7 +43,7 @@ public class AuthController {
         return ResponseEntity.ok(body);
     }
 
-    // Exposes the public JWK set for JWT verification.
+    // Exposes the public JWK set for JWT signature verification.
     @GetMapping("/jwks")
     public ResponseEntity<Map<String, Object>> publicJwks() {
         return ResponseEntity.ok(authService.publicJwkSet());
@@ -50,8 +53,10 @@ public class AuthController {
     public ResponseEntity<SessionResponseDTO> me(
             @AuthenticationPrincipal Jwt jwt
     ) {
+        // Retrieves the user's roles from the authenticated JWT.
         List<String> roles = jwt.getClaimAsStringList("roles");
 
+        // Builds a session response using the token's expiration and user details.
         SessionResponseDTO response = new SessionResponseDTO(
                 remainingSeconds(jwt),
                 jwt.getSubject(),
@@ -61,13 +66,16 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    // Calculates how many seconds remain before the JWT expires.
     private long remainingSeconds(Jwt jwt) {
         Instant expiresAt = jwt.getExpiresAt();
 
+        // Returns zero if the token has no expiration timestamp.
         if (expiresAt == null) {
             return 0;
         }
 
+        // Ensures the remaining time never becomes negative.
         return Math.max(
                 0,
                 Duration.between(
