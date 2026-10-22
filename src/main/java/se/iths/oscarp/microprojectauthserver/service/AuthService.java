@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
-// Handles authentication and JWT generation
+// Handles user authentication, JWT generation, and public key distribution.
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
@@ -34,7 +34,7 @@ public class AuthService {
     private final long jwtExpirationMinutes;
     private final String jwtKeyId;
 
-    // Injects authentication and JWT dependencies
+    // Injects the authentication manager, JWT encoder, key pair, and token settings.
     public AuthService(AuthenticationManager authenticationManager,
                        JwtEncoder jwtEncoder,
                        KeyPair keyPair,
@@ -49,9 +49,10 @@ public class AuthService {
         this.jwtKeyId = jwtKeyId;
     }
 
-    // Authenticates user and generates JWT token
+    // Validates the user's credentials and generates an access token.
     public AuthResult login(LoginRequestDTO request) {
 
+        // Authenticates the user with the supplied username and password.
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
@@ -61,15 +62,17 @@ public class AuthService {
 
         UserDetails principal = (UserDetails) authentication.getPrincipal();
 
+        // Extracts the user's assigned roles from their granted authorities.
         List<String> roles = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                 .filter(authority -> authority.startsWith("ROLE_"))
                 .toList();
 
-
+        // Sets the token's issue time and expiration time.
         Instant now = Instant.now();
         Instant expiresAt = now.plus(jwtExpirationMinutes, ChronoUnit.MINUTES);
 
+        // Defines the claims included in the JWT.
         JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
                 .issuer(jwtIssuer)
                 .issuedAt(now)
@@ -77,14 +80,17 @@ public class AuthService {
                 .subject(principal.getUsername())
                 .claim("roles", roles);
 
+        // Configures the token to use RS256 signing and the specified key ID.
         JwsHeader jwsHeader = JwsHeader.with(SignatureAlgorithm.RS256)
                 .keyId(jwtKeyId)
                 .build();
 
+        // Signs the claims and generates the serialized JWT access token.
         String accessToken = jwtEncoder.encode(
                 JwtEncoderParameters.from(jwsHeader, claimsBuilder.build())
         ).getTokenValue();
 
+        // Returns the access token and its associated response details.
         return new AuthResult(
                 accessToken,
                 new TokenResponseDTO(
@@ -95,7 +101,7 @@ public class AuthService {
         );
     }
 
-    // Returns public JWK set for token verification
+    // Publishes the RSA public key as a JWK set for JWT verification.
     public Map<String, Object> publicJwkSet() {
         RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
                 .keyID(jwtKeyId)
